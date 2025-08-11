@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useRef } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [messages, setMessages] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const socketRef = useRef<WebSocket | null>(null);
+
+  // Conetion to the WebSocket server
+  useEffect(() => {
+    socketRef.current = new WebSocket("ws://localhost:3001");
+
+    socketRef.current.onopen = () => {
+      console.log("Conextion WebSocket it established");
+    };
+
+    socketRef.current.onmessage = (event) => {
+      console.log("event", event);
+
+      setMessages((prev) => [...prev, event.data]);
+    };
+
+    return () => {
+      socketRef.current?.close();
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (socketRef.current && inputValue.trim()) {
+      socketRef.current.send(inputValue);
+      setInputValue("");
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <h1>Chat Basic</h1>
 
-export default App
+      <div>
+        {messages.map((msg, index) => (
+          <div key={index}>{msg}</div>
+        ))}
+      </div>
+
+      <div>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Write your msj..."
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
+    </div>
+  );
+}
