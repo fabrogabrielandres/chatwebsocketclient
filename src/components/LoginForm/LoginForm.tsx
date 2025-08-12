@@ -39,7 +39,12 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
       token: "alice-token",
     };
 
-    onLogin({id: user.id, username: user.username, token: user.token, password: password });
+    onLogin({
+      id: user.id,
+      username: user.username,
+      token: user.token,
+      password: password,
+    });
 
     // if (resp.user) {
     //   onLogin(resp.user);
@@ -49,22 +54,60 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
+    <>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-md mx-auto bg-white p-8 rounded-lg shadow-md"
+        >
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+            Welcome Back
+          </h2>
+
+          <div className="mb-4">
+            <label
+              htmlFor="username"
+              className="block text-gray-700 text-sm font-medium mb-2"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 text-sm font-medium mb-2"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
