@@ -1,6 +1,5 @@
 import React from "react";
 import type { Message } from "../../CustomHooks/UseCustomMsj";
-import type { User } from "../../App";
 
 interface Props {
   messages: Message[];
@@ -8,6 +7,13 @@ interface Props {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   sendMessage: () => void;
+}
+
+export interface User {
+  username: string;
+  token: string;
+  password: string;
+  id: string;
 }
 
 export const Chat = ({

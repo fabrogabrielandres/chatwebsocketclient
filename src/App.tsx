@@ -1,31 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { LoginForm } from "./components/LoginForm/LoginForm";
-import { Chat } from "./components/Chat/Chat";
+import { Chat, type User } from "./components/Chat/Chat";
 import { UseCustomMsj } from "./CustomHooks/UseCustomMsj";
-
-export interface User {
-  username: string;
-  token: string;
-  password: string;
-}
-
-const users: User[] = [
-  {
-    username: "alice",
-    token: "alice-token",
-    password: "123456",
-  },
-  {
-    username: "bob",
-    token: "bob-token",
-    password: "123456",
-  },
-  {
-    username: "charlie",
-    token: "charlie-token",
-    password: "123456",
-  },
-];
 
 export default function App() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -69,7 +45,7 @@ export default function App() {
     return (
       <div>
         <h1>Login</h1>
-        <LoginForm onLogin={setCurrentUser} users={users} />
+        <LoginForm onLogin={setCurrentUser} />
       </div>
     );
   }

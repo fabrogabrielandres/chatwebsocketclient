@@ -1,22 +1,37 @@
 import { useState } from "react";
-import type { User } from "../../App";
+import type { User } from "../Chat/Chat";
 
 interface LoginFormProps {
   onLogin: (user: User) => void;
-  users: User[];
 }
 
-export const LoginForm = ({ onLogin, users }: LoginFormProps) => {
+export const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const isAuthenticated = async (username: string, password: string) => {
+    const response = await fetch("http://localhost:3001/api/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    });
+    const resp = await response.json();
+    return resp;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = users.find(
-      (u) => u.username === username && u.password === password
-    );
-    if (user) {
-      onLogin(user);
+
+    const resp = await isAuthenticated(username, password);
+    console.log("user", resp);
+
+    if (resp.user) {
+      onLogin(resp.user);
     } else {
       alert("Invalid credentials");
     }
