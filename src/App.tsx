@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { LoginForm } from "./components/LoginForm/LoginForm";
+import { Chat } from "./components/Chat/Chat";
+import { UseCustomMsj } from "./CustomHooks/UseCustomMsj";
 
-interface User {
+export interface User {
   username: string;
   token: string;
   password: string;
@@ -24,22 +27,16 @@ const users: User[] = [
   },
 ];
 
-interface Message {
-  msj: string;
-  username: string;
-}
-
 export default function App() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User>(users[0]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { inputValue, setInputValue, setMessages, messages } = UseCustomMsj();
   // Conetion to the WebSocket server
   useEffect(() => {
     // socketRef.current = new WebSocket("ws://localhost:3001");
-    if (!selectedUser) return;
+    if (!currentUser) return;
     socketRef.current = new WebSocket(
-      `ws://localhost:3001?token=${selectedUser.token}`
+      `ws://localhost:3001?token=${currentUser.token}`
     );
     socketRef.current.onopen = () => {
       console.log("Conextion WebSocket it established");
@@ -59,7 +56,7 @@ export default function App() {
     return () => {
       socketRef.current?.close();
     };
-  }, [selectedUser]);
+  }, [currentUser, setMessages]);
 
   const sendMessage = () => {
     if (socketRef.current && inputValue.trim()) {
@@ -68,53 +65,22 @@ export default function App() {
     }
   };
 
+  if (!currentUser) {
+    return (
+      <div>
+        <h1>Login</h1>
+        <LoginForm onLogin={setCurrentUser} users={users} />
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h1>Chat Basic</h1>
-      <span>Users : {JSON.stringify(selectedUser)}</span>
-
-      <div>
-        {messages.map(({ msj, username }, index) => (
-          <div key={index}>
-            <span>
-              {username}: {msj}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Write your msj..."
-        />
-        <button onClick={sendMessage}>Send</button>
-      </div>
-
-      <h1>Select users</h1>
-      <div>
-        {users.map((user, index) => (
-          <div key={index}>
-            <button
-              onClick={() => {
-                setSelectedUser(user);
-                console.log();
-              }}
-              style={{
-                backgroundColor:
-                  selectedUser.username === user.username
-                    ? "lightblue"
-                    : "white",
-              }}
-            >
-              {user.username}
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Chat
+      messages={messages}
+      inputValue={inputValue}
+      setInputValue={setInputValue}
+      sendMessage={sendMessage}
+      currentUser={currentUser}
+    />
   );
 }
