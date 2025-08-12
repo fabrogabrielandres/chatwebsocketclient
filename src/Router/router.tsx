@@ -1,9 +1,9 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { Login } from "../Pages/Login/Login";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { DashboardLayout } from "../layouts/DashboardLayout";
-import { ChatDos } from "../components/ChatDos/ChatDos";
 import { App } from "../App";
+import { ChatPage } from "../Pages/ChatPage/ChatPage";
 
 export const router = createBrowserRouter([
   {
@@ -16,12 +16,11 @@ export const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           {
-            path: "",
-            element: <ChatDos />,
+            path: "general",
+            element: <ChatPage />,
           },
         ],
       },
-
       /// Auth Routes
       {
         path: "auth",
@@ -32,6 +31,10 @@ export const router = createBrowserRouter([
             element: <Login />,
           },
         ],
+      },
+      {
+        path: "*", // Cualquier ruta no coincidente
+        element: <Navigate to="/auth/login" replace />,
       },
     ],
   },

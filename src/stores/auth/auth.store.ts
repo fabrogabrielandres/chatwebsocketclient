@@ -10,22 +10,22 @@ export interface AuthState {
   user?: User;
 
   loginUser: (email: string, password: string) => Promise<void>;
-  checkAuthStatus: () => Promise<void>;
   logoutUser: () => void;
+  getUser: () => User | undefined;
+  getToken: () => string | undefined;
 }
 
-const storeApi: StateCreator<AuthState> = (set) => ({
+const storeApi: StateCreator<AuthState> = (set, get) => ({
   status: "pending",
   token: undefined,
   user: undefined,
 
   loginUser: async (email: string, password: string) => {
-
     try {
       const { authorized, user } = await AuthService.login(email, password);
-      console.log("authorized",authorized);
-      
-      const token = user.token;      
+      console.log("authorized", authorized);
+
+      const token = user.token;
       set({ status: authorized, token, user });
     } catch (error) {
       console.error("Login failed:", error);
@@ -34,20 +34,15 @@ const storeApi: StateCreator<AuthState> = (set) => ({
     }
   },
 
-  checkAuthStatus: async () => {
-    try {
-      const { authorized, user } = await AuthService.checkStatus();
-      const token = user.token;
-      set({ status: authorized, token, user });
-    } catch (error) {
-      console.log("Check status failed:", error);
-
-      set({ status: "unauthorized", token: undefined, user: undefined });
-    }
-  },
-
   logoutUser: () => {
     set({ status: "unauthorized", token: undefined, user: undefined });
+  },
+
+  getUser: () => {
+    return get().user;
+  },
+  getToken: () => {
+    return get().token;
   },
 });
 

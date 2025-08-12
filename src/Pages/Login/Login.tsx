@@ -4,6 +4,7 @@ import { useAuthStore } from "../../stores/auth/auth.store";
 
 export const Login = () => {
   const navigate = useNavigate();
+  
   const loginUser = useAuthStore((state) => state.loginUser);
   const authStatus = useAuthStore((state) => state.status);
   //   console.log(navigate.name);
@@ -12,7 +13,7 @@ export const Login = () => {
   const [password, setPassword] = useState("");
 
   if (authStatus === "authorized") {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard/general" />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +22,7 @@ export const Login = () => {
     try {
       const algo = await loginUser(username, password);
       console.log("algo", algo);
-      navigate("/dashboard");
+      navigate("/dashboard/general");
     } catch (error) {
       console.log(error);
       alert("Invalid credentials");
