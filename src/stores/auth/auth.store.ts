@@ -23,6 +23,8 @@ const storeApi: StateCreator<AuthState> = (set) => ({
 
     try {
       const { authorized, user } = await AuthService.login(email, password);
+      console.log("authorized",authorized);
+      
       const token = user.token;      
       set({ status: authorized, token, user });
     } catch (error) {

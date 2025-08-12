@@ -20,7 +20,7 @@ export class AuthService {
         username,
         password,
       });
-      console.log(data);
+      console.log("data en authservice",data);
 
       return data;
     } catch (error) {

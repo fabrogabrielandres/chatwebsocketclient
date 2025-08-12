@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { useAuthStore } from "../../stores/auth/auth.store";
 
 export const Login = () => {
   const navigate = useNavigate();
-
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const authStatus = useAuthStore((state) => state.status);
   //   console.log(navigate.name);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const loginUser = useAuthStore((state) => state.loginUser);
+  if (authStatus === "authorized") {
+    return <Navigate to="/dashboard" />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
