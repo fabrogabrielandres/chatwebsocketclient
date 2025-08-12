@@ -39,12 +39,12 @@ export const Chat = ({
           <div
             key={index}
             className={`flex ${
-              username === true ? "justify-end" : "justify-start"
+              username === currentUser?.username ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`max-w-xs md:max-w-md rounded-lg p-3 ${
-                username === currentUser
+                username === currentUser?.username
                   ? "bg-blue-500 text-white rounded-br-none"
                   : "bg-white border border-gray-200 rounded-bl-none"
               }`}
