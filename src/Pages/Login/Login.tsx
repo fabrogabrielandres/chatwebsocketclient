@@ -1,35 +1,28 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useAuthStore } from "../../stores/auth/auth.store";
 
 export const Login = () => {
-//   const navigate = useNavigate();
+  const navigate = useNavigate();
 
-//   console.log(navigate.name);
+  //   console.log(navigate.name);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const loginUser = useAuthStore((state) => state.loginUser);
 
-  // const isAuthenticated = async (username: string, password: string) => {
-  //   const response = await fetch("http://localhost:3001/api/auth", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       username,
-  //       password,
-  //     }),
-  //   });
-  //   const resp = await response.json();
-  //   return resp;
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    loginUser(username, password);
+
+    try {
+      const algo = await loginUser(username, password);
+      console.log("algo", algo);
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+      alert("Invalid credentials");
+    }
   };
 
   return (
