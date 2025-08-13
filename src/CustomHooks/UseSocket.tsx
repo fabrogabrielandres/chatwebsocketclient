@@ -4,10 +4,9 @@ import type { Message } from "./UseCustomMsj";
 
 interface Props {
   currentUser: User | null;
-  currentToken: string | undefined;
 }
 
-export default function UseSocket({ currentUser, currentToken }: Props) {
+export default function UseSocket({ currentUser }: Props) {
   const socketRef = useRef<WebSocket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -15,7 +14,7 @@ export default function UseSocket({ currentUser, currentToken }: Props) {
     // socketRef.current = new WebSocket("ws://localhost:3001");
     if (!currentUser) return;
     socketRef.current = new WebSocket(
-      `ws://localhost:3001?token=${currentToken}`
+      `ws://localhost:3001?tokenUser=${currentUser.token}`
     );
     socketRef.current.onopen = () => {
       console.log("Conextion WebSocket it established");
@@ -32,6 +31,6 @@ export default function UseSocket({ currentUser, currentToken }: Props) {
     return () => {
       socketRef.current?.close();
     };
-  }, [currentUser, setMessages, currentToken]);
+  }, [currentUser, setMessages]);
   return { socketRef, messages };
 }

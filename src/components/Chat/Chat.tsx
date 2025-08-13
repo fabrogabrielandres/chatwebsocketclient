@@ -1,13 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Message } from "../../CustomHooks/UseCustomMsj";
-
-interface Props {
-  messages: Message[];
-  currentUser: User | null;
-  inputValue: string;
-  setInputValue: React.Dispatch<React.SetStateAction<string>>;
-  sendMessage: () => void;
-}
 
 export interface User {
   username: string;
@@ -16,13 +8,22 @@ export interface User {
   id: string;
 }
 
-export const Chat = ({
-  messages,
-  currentUser,
-  inputValue,
-  setInputValue,
-  sendMessage,
-}: Props) => {
+interface Props {
+  messages: Message[];
+  socketRef: React.RefObject<WebSocket | null>;
+  currentUser: User | null;
+}
+
+export const Chat = ({ socketRef, messages, currentUser }: Props) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const sendMessage = () => {
+    if (socketRef.current && inputValue.trim()) {
+      socketRef.current.send(inputValue);
+      setInputValue("");
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
