@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuthStore } from "../stores/auth/auth.store";
+import { SideMenu } from "../components/sidemenu/SideMenu";
 
 export const DashboardLayout = () => {
   const authStatus = useAuthStore((state) => state.status);
@@ -14,12 +15,11 @@ export const DashboardLayout = () => {
   }
 
   return (
-    <div className="bg-slate-200 overflow-y-scroll w-screen h-screen antialiased text-slate-900 selection:bg-blue-900 selection:text-white">
+    <div className="bg-slate-200 w-screen h-screen antialiased text-slate-900 selection:bg-blue-900 selection:text-white">
       <div className="flex flex-row relative w-screen">
-        {/* <SideMenu /> */}
-        <h1>sidebar</h1>
+        <SideMenu />
 
-        <div className="w-full p-4">
+        <div className="w-full">
           <Outlet />
         </div>
       </div>

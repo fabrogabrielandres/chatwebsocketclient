@@ -4,6 +4,7 @@ import { AuthLayout } from "../layouts/AuthLayout";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { App } from "../App";
 import { ChatPage } from "../Pages/ChatPage/ChatPage";
+import { CreateRoom } from "../components/CreateRoom/CreateRoom";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
             path: "general",
             element: <ChatPage />,
           },
+          {
+            path: "createroom",
+            element: <CreateRoom />,
+          },
         ],
       },
       /// Auth Routes
@@ -32,10 +37,10 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "*", // Cualquier ruta no coincidente
-        element: <Navigate to="/auth/login" replace />,
-      },
+      // {
+      //   path: "*", // Cualquier ruta no coincidente
+      //   element: <Navigate to="/auth/login" replace />,
+      // },
     ],
   },
 ]);

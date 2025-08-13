@@ -39,7 +39,9 @@ export const Chat = ({
           <div
             key={index}
             className={`flex ${
-              username === currentUser?.username ? "justify-end" : "justify-start"
+              username === currentUser?.username
+                ? "justify-end"
+                : "justify-start"
             }`}
           >
             <div
