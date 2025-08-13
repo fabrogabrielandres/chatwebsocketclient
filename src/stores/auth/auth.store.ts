@@ -3,6 +3,7 @@ import type { AuthStatus } from "../../interfaces/auth.interface";
 import type { User } from "../../components/Chat/Chat";
 import { create, type StateCreator } from "zustand";
 import { AuthService } from "../../services/auth.service";
+import { useWebSocketStore } from "../websocket/websocket.store";
 
 export interface AuthState {
   status: AuthStatus;
@@ -23,21 +24,24 @@ const storeApi: StateCreator<AuthState> = (set, get) => ({
   loginUser: async (email: string, password: string) => {
     try {
       const { authorized, user } = await AuthService.login(email, password);
-      console.log("authorized", authorized);
-
       const token = user.token;
       set({ status: authorized, token, user });
+
+      // Conecta el WebSocket después del login
+      if (authorized === "authorized") {
+        useWebSocketStore.getState().connect(token);
+      }
     } catch (error) {
-      console.error("Login failed:", error);
       set({ status: "unauthorized", token: undefined, user: undefined });
-      throw "Unauthorized";
+      throw error;
     }
   },
 
   logoutUser: () => {
+    // Desconecta el WebSocket al hacer logout
+    useWebSocketStore.getState().disconnect();
     set({ status: "unauthorized", token: undefined, user: undefined });
   },
-
   getUser: () => {
     return get().user;
   },

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import type { Message } from "../../CustomHooks/UseCustomMsj";
+import { useState } from "react";
+import { useWebSocketStore } from "../../stores/websocket/websocket.store";
 
 export interface User {
   username: string;
@@ -9,17 +9,15 @@ export interface User {
 }
 
 interface Props {
-  messages: Message[];
-  socketRef: React.RefObject<WebSocket | null>;
   currentUser: User | null;
 }
 
-export const Chat = ({ socketRef, messages, currentUser }: Props) => {
+export const Chat = ({ currentUser }: Props) => {
   const [inputValue, setInputValue] = useState("");
-
+  const { socket, messages } = useWebSocketStore();
   const sendMessage = () => {
-    if (socketRef.current && inputValue.trim()) {
-      socketRef.current.send(inputValue);
+    if (socket && inputValue.trim()) {
+      socket.send(inputValue);
       setInputValue("");
     }
   };

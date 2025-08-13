@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router";
+import { WebSocketManager } from "./components/WebSocketManager/WebSocketManager";
 
 export const App = () => {
   const { pathname } = useLocation();
@@ -9,6 +10,7 @@ export const App = () => {
 
   return (
     <main>
+      <WebSocketManager />
       <Outlet />
     </main>
   );
