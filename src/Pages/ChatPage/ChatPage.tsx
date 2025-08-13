@@ -1,15 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import { Chat, type User } from "../../components/Chat/Chat";
-import { UseCustomMsj } from "../../CustomHooks/UseCustomMsj";
+import { useEffect, useState } from "react";
+import { type User } from "../../components/Chat/Chat";
 import { useAuthStore } from "../../stores/auth/auth.store";
+import UseSocket from "../../CustomHooks/UseSocket";
+
+export interface Message {
+  msj: string;
+  username: string;
+}
 
 export const ChatPage = () => {
-  const socketRef = useRef<WebSocket | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentToken, setCurrentToken] = useState<string | undefined>(
     undefined
   );
-  const { inputValue, setInputValue, setMessages, messages } = UseCustomMsj();
+  const [inputValue, setInputValue] = useState("");
+  const { socketRef, messages } = UseSocket({ currentUser, currentToken });
 
   const getUser = useAuthStore((state) => state.getUser);
   const getToken = useAuthStore((state) => state.getToken);
@@ -28,31 +33,6 @@ export const ChatPage = () => {
   }, [getToken]);
 
   // Conetion to the WebSocket server
-  useEffect(() => {
-    // socketRef.current = new WebSocket("ws://localhost:3001");
-    if (!currentUser) return;
-    socketRef.current = new WebSocket(
-      `ws://localhost:3001?token=${currentToken}`
-    );
-    socketRef.current.onopen = () => {
-      console.log("Conextion WebSocket it established");
-    };
-
-    socketRef.current.onmessage = (event) => {
-      console.log("event", event);
-      const StringToJson = JSON.parse(event.data);
-      console.log("StringToJson", StringToJson);
-
-      setMessages((prev) => [
-        ...prev,
-        { msj: StringToJson.msj, username: StringToJson.username },
-      ]);
-    };
-
-    return () => {
-      socketRef.current?.close();
-    };
-  }, [currentUser, setMessages]);
 
   const sendMessage = () => {
     if (socketRef.current && inputValue.trim()) {
@@ -62,14 +42,59 @@ export const ChatPage = () => {
   };
 
   return (
-    <div>
-      <Chat
-        messages={messages}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        sendMessage={sendMessage}
-        currentUser={currentUser}
-      />
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-blue-600 text-white p-4 shadow-md">
+        <h1 className="text-2xl font-bold">Chat Basic</h1>
+        <span className="text-blue-100">
+          Users online: {JSON.stringify(currentUser)}
+        </span>
+      </header>
+
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map(({ msj, username }, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              username === currentUser?.username
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-xs md:max-w-md rounded-lg p-3 ${
+                username === currentUser?.username
+                  ? "bg-blue-500 text-white rounded-br-none"
+                  : "bg-white border border-gray-200 rounded-bl-none"
+              }`}
+            >
+              <span className="font-semibold">{username}: </span>
+              <span>{msj}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Message Input */}
+      <div className="p-4 border-t border-gray-200 bg-white">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Write your message..."
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <button
+            onClick={sendMessage}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
