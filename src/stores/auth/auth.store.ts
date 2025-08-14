@@ -1,9 +1,15 @@
 import { devtools, persist } from "zustand/middleware";
 import type { AuthStatus } from "../../interfaces/auth.interface";
-import type { User } from "../../components/Chat/Chat";
 import { create, type StateCreator } from "zustand";
 import { AuthService } from "../../services/auth.service";
 import { useWebSocketStore } from "../websocket/websocket.store";
+
+export interface User {
+  username: string;
+  token: string;
+  password: string;
+  id: string;
+}
 
 export interface AuthState {
   status: AuthStatus;

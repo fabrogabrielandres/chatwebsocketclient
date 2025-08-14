@@ -14,7 +14,7 @@ export const CreateRoom = () => {
       // Aquí iría la lógica para crear la sala
       console.log("Creando sala:", { roomName, roomPassword });
       // Suponiendo que la creación fue exitosa, redirigimos
-      navigate("/dashboard/rooms");
+      // navigate("/dashboard/rooms");
     } catch (error) {
       console.log(error);
       alert("Error al crear la sala");

@@ -1,4 +1,5 @@
-import { Chat, type User } from "../../components/Chat/Chat";
+import { useLocation } from "react-router";
+import { Chat } from "../../components/Chat/Chat";
 import { useAuthStore } from "../../stores/auth/auth.store";
 
 export interface Message {
@@ -7,8 +8,12 @@ export interface Message {
 }
 
 export const ChatPage = () => {
-  
-  const currentUser = useAuthStore((state) => state.getUser()) as User | null;
 
-  return <Chat currentUser={currentUser} />;
+   const location = useLocation();
+  
+  console.log(location.pathname); // Muestra la ruta actual
+  
+
+  const currentUser = useAuthStore((state) => state.getUser());
+  return <Chat currentRoom="general" currentUser={currentUser} />;
 };
