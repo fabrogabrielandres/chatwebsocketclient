@@ -9,7 +9,7 @@ export const CreateRoom = () => {
 
   useEffect(() => {
     if (roomName && availableRooms.includes(roomName) && !roomError) {
-      navigate(`/room/${roomName}`);
+      navigate(`/dashboard/general?roomName=${roomName}`);
     }
   }, [availableRooms, roomError, roomName, navigate]);
 
