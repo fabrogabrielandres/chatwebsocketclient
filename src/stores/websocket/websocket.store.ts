@@ -15,11 +15,15 @@ interface WebSocketState {
   currentRoom: string;
   availableRooms: string[];
   myRoom?: string;
+  roomError: string | null; // Nuevo campo para errores
   connect: (token: string) => void;
   disconnect: () => void;
-  createRoom: (roomName: string) => void;
   joinRoom: (roomName: string) => void;
   sendMessage: (message: string) => void;
+  clearRoomError: () => void; // Nuevo método para limpiar errores
+
+  pendingRoom: string | null; // Nuevo estado para sala en proceso
+  createRoom: (roomName: string) => void; // Ahora es void
 }
 
 export const useWebSocketStore = create<WebSocketState>((set, get) => ({
@@ -27,6 +31,8 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
   messages: [],
   currentRoom: "general",
   availableRooms: ["general"],
+  roomError: null, // Inicializado como null
+  pendingRoom: null,
 
   connect: (token: string) => {
     get().socket?.close();
@@ -39,12 +45,24 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 
     newSocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      if (message.type === "room_created") {
+      const currentPendingRoom = get().pendingRoom;
+
+      if (
+        message.type === "room_created" &&
+        currentPendingRoom === message.room
+      ) {
         set((state) => ({
           availableRooms: [...state.availableRooms, message.room],
-          currentRoom: message.room,
+          pendingRoom: null, // Limpiar estado pendiente
+          roomError: null,
         }));
+      } else if (message.type === "error" && currentPendingRoom) {
+        set({
+          roomError: message.message,
+          pendingRoom: null, // Limpiar estado pendiente
+        });
       } else {
+        // Manejo de otros mensajes (chats normales)
         set((state) => ({ messages: [...state.messages, message] }));
       }
     };
@@ -73,17 +91,28 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
       );
     }
   },
+  clearRoomError: () => set({ roomError: null }),
 
   createRoom: (roomName: string) => {
     const socket = get().socket;
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(
-        JSON.stringify({
-          type: "create_room",
-          roomName: roomName,
-        })
-      );
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      set({ roomError: "Not connected to server" });
+      return;
     }
+
+    // Resetear errores y marcar sala como pendiente
+    set({
+      roomError: null,
+      pendingRoom: roomName,
+    });
+
+    // Enviar solicitud al servidor
+    socket.send(
+      JSON.stringify({
+        type: "create_room",
+        roomName: roomName,
+      })
+    );
   },
 
   joinRoom: (roomName: string) => {
