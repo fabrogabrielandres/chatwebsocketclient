@@ -5,6 +5,7 @@ import { DashboardLayout } from "../layouts/DashboardLayout";
 import { App } from "../App";
 import { ChatPage } from "../Pages/ChatPage/ChatPage";
 import { CreateRoom } from "../components/CreateRoom/CreateRoom";
+import { SelectRoom } from "../Pages/SelectRoom/SelectRoom";
 
 export const router = createBrowserRouter([
   {
@@ -17,12 +18,16 @@ export const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           {
-            path: "general",
+            path: "general", // <- Sin :roomName? (ahora usaremos query params)
             element: <ChatPage />,
           },
           {
             path: "createroom",
             element: <CreateRoom />,
+          },
+          {
+            path: "selectRoom",
+            element: <SelectRoom />,
           },
         ],
       },
@@ -37,10 +42,10 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      // {
-      //   path: "*", // Cualquier ruta no coincidente
-      //   element: <Navigate to="/auth/login" replace />,
-      // },
+      {
+        path: "*", // Cualquier ruta no coincidente
+        element: <Navigate to="/auth/login" replace />,
+      },
     ],
   },
 ]);

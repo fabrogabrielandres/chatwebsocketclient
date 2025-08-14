@@ -20,6 +20,11 @@ const menuItems: MenuItem[] = [
     subTitle: "Could you invite",
     href: "/dashboard/createroom",
   },
+  {
+    title: "select room Chat",
+    subTitle: "Could you join to a room",
+    href: "/dashboard/selectRoom",
+  },
 ];
 
 export const SideMenu = () => {
